@@ -139,7 +139,6 @@ declare module 'vue' {
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
     readonly useId: UnwrapRef<typeof import('vue')['useId']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
-    readonly usePbcmRouter: UnwrapRef<typeof import('./composables/usePbcmRouter')['usePbcmRouter']>
     readonly usePbcmTheme: UnwrapRef<typeof import('./composables/usePbcmTheme')['usePbcmTheme']>
     readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
