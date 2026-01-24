@@ -32,9 +32,7 @@ const closeDialog = () => {
       <!-- Header -->
       <v-card-title class="d-flex align-center justify-space-between pa-4 bg-primary">
         <div class="flex-grow-1">
-          <h2 class="text-h6 text-white font-weight-bold">
-            Under Construction
-          </h2>
+
         </div>
         <v-btn
           icon="mdi-close"
