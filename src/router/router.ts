@@ -1,13 +1,14 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
 
-// Import page components
+// Import page components with proper type annotations
 const Home = () => import('@/pages/index.vue')
 const About = () => import('@/pages/about.vue')
 const Services = () => import('@/pages/services.vue')
 const Ministries = () => import('@/pages/ministries.vue')
 const Events = () => import('@/pages/events.vue')
 const Contact = () => import('@/pages/contact.vue')
+const Mission = () => import('@/pages/missionView.vue')
 
 // Import layout
 const DefaultLayout = () => import('@/layouts/default.vue')
@@ -70,6 +71,15 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: 'Contact Us - PBCM',
           description: 'Get in touch with Philippine Christian Bible Missionary'
+        }
+      },
+      {
+        path: '/mission',
+        name: 'Mission',
+        component: Mission,
+        meta: {
+          title: 'Our Mission - PBCM',
+          description: 'Learn about the mission and vision of Philippine Christian Bible Missionary'
         }
       }
     ]
