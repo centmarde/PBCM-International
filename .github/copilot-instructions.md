@@ -95,6 +95,70 @@ app.use(vuetify).use(router).use(pinia)
 </div>
 ```
 
+### Responsive Design with Vuetify Display Utilities
+- **CRITICAL**: Always use Vuetify's `useDisplay()` composable for responsive design
+- **Import Pattern**: `import { useDisplay } from 'vuetify'`
+- **Breakpoint Detection**: Destructure needed breakpoints: `const { xs, sm, md, lg, xl, smAndDown, mdAndUp } = useDisplay()`
+- **Mobile-First Approach**: Design for mobile first, then enhance for larger screens
+- **Common Patterns**:
+  ```vue
+  <script setup lang="ts">
+  import { useDisplay } from 'vuetify'
+  
+  const { xs, smAndDown, mdAndUp } = useDisplay()
+  </script>
+  
+  <template>
+    <!-- ✅ CORRECT: Responsive layout using useDisplay -->
+    <v-container>
+      <v-row :justify="smAndDown ? 'center' : 'start'">
+        <v-col 
+          cols="12" 
+          :md="mdAndUp ? 6 : 12"
+          :class="{ 'text-center': smAndDown }"
+        >
+          <v-card :class="{ 'mx-auto': smAndDown, 'max-width-400': xs }">
+            <v-card-title>{{ title }}</v-card-title>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+    
+    <!-- ✅ CORRECT: Conditional rendering for mobile -->
+    <v-dialog 
+      :fullscreen="xs"
+      :max-width="smAndDown ? '100%' : '600px'"
+    >
+      <!-- Dialog content -->
+    </v-dialog>
+    
+    <!-- ✅ CORRECT: Responsive button sizing -->
+    <v-btn 
+      :size="xs ? 'small' : 'large'"
+      :block="smAndDown"
+      color="primary"
+    >
+      Action Button
+    </v-btn>
+  </template>
+  ```
+
+- **Available Breakpoints**:
+  - `xs` - Extra small (< 600px) - Mobile phones
+  - `sm` - Small (600px - 960px) - Tablets  
+  - `md` - Medium (960px - 1264px) - Small laptops
+  - `lg` - Large (1264px - 1904px) - Desktops
+  - `xl` - Extra large (> 1904px) - Large screens
+  - `smAndDown` - Small screens and below (< 960px)
+  - `mdAndUp` - Medium screens and above (≥ 960px)
+
+- **Mobile Optimization Guidelines**:
+  - Use `:fullscreen="xs"` for dialogs on mobile
+  - Center content with `:class="{ 'text-center': smAndDown }"`
+  - Stack columns on mobile: `:cols="xs ? 12 : 6"`
+  - Adjust spacing: `:class="{ 'pa-2': xs, 'pa-6': mdAndUp }"`
+  - Use block buttons: `:block="smAndDown"`
+
 ### Auto-Import Configuration
 - **Vue composables**: `ref`, `computed`, `onMounted`, etc. available globally
 - **Router**: `useRouter`, `useRoute` auto-imported from Vue Router
