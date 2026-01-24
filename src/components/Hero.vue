@@ -9,7 +9,7 @@ type HeroContent = {
 
 const heroContent: HeroContent = {
   title: 'Welcome to PBCM',
-  subtitle: 'Philippine Christian Bible Missionary',
+  subtitle: 'Philippine Christian Benevolent Missionary',
   description: 'The Incarnation of the Holy Spirit. Join us in worship, fellowship, and spiritual growth as we spread the Gospel and serve our community with love and compassion.',
   imageUrl: '/assets/master-portrait.jpg',
   imageAlt: 'PBCM Church Logo'
