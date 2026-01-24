@@ -1,0 +1,132 @@
+/* PBCM Theme CSS Variables and Global Styles */
+
+/* CSS Custom Properties for easier theme access */
+:root {
+  /* Primary Blue Variants */
+  --pbcm-primary: #1565C0;
+  --pbcm-primary-light: #42A5F5;
+  --pbcm-primary-dark: #0D47A1;
+  
+  /* Secondary Blue Variants */
+  --pbcm-secondary: #2196F3;
+  --pbcm-secondary-light: #64B5F6;
+  --pbcm-secondary-dark: #1976D2;
+  
+  /* Common spacing and sizing */
+  --pbcm-border-radius: 8px;
+  --pbcm-border-radius-lg: 16px;
+  --pbcm-elevation-light: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --pbcm-elevation-medium: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --pbcm-elevation-high: 0 8px 16px rgba(0, 0, 0, 0.2);
+  
+  /* Transitions */
+  --pbcm-transition-fast: 0.15s ease;
+  --pbcm-transition-normal: 0.3s ease;
+  --pbcm-transition-slow: 0.5s ease;
+}
+
+/* Global utility classes */
+.pbcm-gradient-text {
+  background: linear-gradient(45deg, var(--pbcm-primary), var(--pbcm-secondary));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.pbcm-gradient-bg {
+  background: linear-gradient(135deg, var(--pbcm-primary), var(--pbcm-secondary));
+}
+
+.pbcm-gradient-bg-light {
+  background: linear-gradient(135deg, var(--pbcm-primary-light), var(--pbcm-secondary-light));
+}
+
+.pbcm-shadow-soft {
+  box-shadow: var(--pbcm-elevation-light);
+}
+
+.pbcm-shadow-medium {
+  box-shadow: var(--pbcm-elevation-medium);
+}
+
+.pbcm-shadow-strong {
+  box-shadow: var(--pbcm-elevation-high);
+}
+
+.pbcm-border-radius {
+  border-radius: var(--pbcm-border-radius);
+}
+
+.pbcm-border-radius-lg {
+  border-radius: var(--pbcm-border-radius-lg);
+}
+
+/* Smooth transitions for all interactive elements */
+.pbcm-transition {
+  transition: all var(--pbcm-transition-normal);
+}
+
+/* Theme-aware component bases */
+.pbcm-card {
+  border-radius: var(--pbcm-border-radius-lg);
+  transition: all var(--pbcm-transition-normal);
+}
+
+.pbcm-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--pbcm-elevation-high);
+}
+
+.pbcm-button {
+  text-transform: none !important;
+  border-radius: var(--pbcm-border-radius);
+  transition: all var(--pbcm-transition-fast);
+}
+
+.pbcm-button:hover {
+  transform: translateY(-1px);
+}
+
+/* Accessibility improvements */
+.pbcm-focus-visible {
+  outline: 2px solid var(--pbcm-primary);
+  outline-offset: 2px;
+}
+
+/* Print styles for better document printing */
+@media print {
+  .pbcm-no-print {
+    display: none !important;
+  }
+  
+  .pbcm-print-only {
+    display: block !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --pbcm-primary: #000080; /* Navy blue */
+    --pbcm-secondary: #0066CC; /* Bright blue */
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Dark theme color adjustments */
+.v-theme--pbcmDark {
+  --pbcm-elevation-light: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --pbcm-elevation-medium: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --pbcm-elevation-high: 0 8px 16px rgba(0, 0, 0, 0.5);
+}
