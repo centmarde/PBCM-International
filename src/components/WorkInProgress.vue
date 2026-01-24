@@ -19,6 +19,13 @@ const { xs, smAndDown } = useDisplay();
 const closeDialog = () => {
   emit("update:modelValue", false);
 };
+
+// Last update tracking
+const lastUpdate = new Date('2026-01-24').toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
 </script>
 
 <template>
@@ -73,6 +80,19 @@ const closeDialog = () => {
             We're building something amazing for God's glory.<br />
             Please check back soon.
           </p>
+
+          <!-- Last Update Section -->
+          <div class="text-center mb-6">
+            <v-chip
+              size="small"
+              color="success"
+              variant="flat"
+              prepend-icon="mdi-clock-outline"
+              class="mx-auto"
+            >
+              Last Updated: {{ lastUpdate }}
+            </v-chip>
+          </div>
 
           <v-divider class="my-6" />
           <!-- Developer Invitation Section -->
@@ -189,5 +209,20 @@ const closeDialog = () => {
 
 .scrollable-content :deep(.ps__rail-y:hover) {
   opacity: 1;
+}
+
+/* Chip styling improvements */
+.v-chip {
+  font-weight: 500;
+}
+
+/* Smooth animations for interactive elements */
+.v-btn, .v-chip {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.v-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(21, 101, 192, 0.2);
 }
 </style>
