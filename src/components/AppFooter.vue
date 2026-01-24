@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { useDisplay } from 'vuetify'
+
 type FooterLink = {
   title: string
   href: string
@@ -9,6 +11,8 @@ type FooterSection = {
   title: string
   links: FooterLink[]
 }
+
+const { xs, smAndDown, mdAndUp } = useDisplay()
 
 const footerSections: FooterSection[] = [
   {
@@ -56,10 +60,15 @@ const currentYear = new Date().getFullYear()
     :color="$vuetify.theme.current.dark ? 'surface' : 'primary'"
   >
     <v-container>
-      <v-row>
+      <v-row :justify="smAndDown ? 'center' : 'start'">
         <!-- Logo and Mission -->
-        <v-col cols="12" md="4" class="mb-6">
-          <div class="footer-brand">
+        <v-col
+          cols="12"
+          :md="mdAndUp ? 4 : 12"
+          class="mb-6"
+          :class="{ 'text-center': smAndDown }"
+        >
+          <div class="footer-brand" :class="{ 'mx-auto': smAndDown }">
             <h3 class="footer-title mb-4">
               Philippine Christian Bible Missionary
             </h3>
@@ -69,7 +78,7 @@ const currentYear = new Date().getFullYear()
             </p>
 
             <!-- Social Links -->
-            <div class="social-links">
+            <div class="social-links" :class="{ 'justify-center': smAndDown }">
               <v-btn
                 v-for="social in socialLinks"
                 :key="social.icon"
@@ -90,15 +99,16 @@ const currentYear = new Date().getFullYear()
           v-for="section in footerSections"
           :key="section.title"
           cols="12"
-          sm="4"
-          md="2"
+          :sm="xs ? 12 : 4"
+          :md="mdAndUp ? 2 : 4"
           class="mb-6"
+          :class="{ 'text-center': smAndDown }"
         >
           <div class="footer-section-content">
             <h4 class="footer-section-title mb-3">
               {{ section.title }}
             </h4>
-            <ul class="footer-links">
+            <ul class="footer-links" :class="{ 'text-center': smAndDown }">
               <li v-for="link in section.links" :key="link.title" class="mb-2">
                 <v-btn
                   :to="link.href"
@@ -115,11 +125,19 @@ const currentYear = new Date().getFullYear()
         </v-col>
 
         <!-- Contact Info -->
-        <v-col cols="12" md="2" class="mb-6">
+        <v-col
+          cols="12"
+          :md="mdAndUp ? 2 : 12"
+          class="mb-6"
+          :class="{ 'text-center': smAndDown }"
+        >
           <div class="footer-section-content">
             <h4 class="footer-section-title mb-3">Contact Info</h4>
             <div class="contact-info">
-              <div class="contact-item mb-2">
+              <div
+                class="contact-item mb-2"
+                :class="{ 'justify-center': smAndDown }"
+              >
                 <v-icon
                   icon="mdi-map-marker"
                   size="small"
@@ -128,7 +146,10 @@ const currentYear = new Date().getFullYear()
                 />
                 <span class="contact-text">123 Faith Street<br>Manila, Philippines</span>
               </div>
-              <div class="contact-item mb-2">
+              <div
+                class="contact-item mb-2"
+                :class="{ 'justify-center': smAndDown }"
+              >
                 <v-icon
                   icon="mdi-clock"
                   size="small"
@@ -207,6 +228,10 @@ const currentYear = new Date().getFullYear()
   gap: 0.5rem;
 }
 
+.social-links.justify-center {
+  justify-content: center;
+}
+
 .contact-info {
   color: rgba(var(--v-theme-on-primary), 0.9);
 }
@@ -215,6 +240,10 @@ const currentYear = new Date().getFullYear()
   display: flex;
   align-items: flex-start;
   font-size: 0.9rem;
+}
+
+.contact-item.justify-center {
+  justify-content: center;
 }
 
 .contact-text {

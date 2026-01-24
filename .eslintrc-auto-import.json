@@ -70,7 +70,6 @@
     "useCssVars": true,
     "useId": true,
     "useModel": true,
-    "usePbcmRouter": true,
     "usePbcmTheme": true,
     "useRoute": true,
     "useRouter": true,
