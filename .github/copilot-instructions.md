@@ -2,7 +2,7 @@
 
 ## Architecture Overview
 
-This is a **PBCM (Philippine Christian Bible Missionary) website** built with Vue 3, Vuetify 3, TypeScript, and Vite. The project uses a file-based routing system with automatic imports and layouts.
+This is a **PBCM (Philippine Christian Benevolent Missionary) website** built with Vue 3, Vuetify 3, TypeScript, and Vite. The project uses a file-based routing system with automatic imports and layouts.
 
 ### Key Stack Components
 - **Framework**: Vue 3 with Composition API and `<script setup>` syntax
