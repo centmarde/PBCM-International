@@ -20,8 +20,8 @@ const footerSections: FooterSection[] = [
     links: [
       { title: 'Our Mission', href: '/mission' },
       { title: 'Our Beliefs', href: '/our-beliefs' },
-      { title: 'Leadership', href: '/leadership' },
-      { title: 'History', href: '/history' },
+      { title: 'Leadership', href: '/leadershipView' },
+      { title: 'History', href: '/historyView' },
     ]
   },
   {
