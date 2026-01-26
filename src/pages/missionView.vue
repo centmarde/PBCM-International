@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import OuterLayout from '@/layouts/outerLayout.vue'
 import { useDisplay, useTheme } from 'vuetify'
 import { pbcmThemes } from '@/theme/theme'
 
@@ -44,9 +45,11 @@ const missionSections: MissionSection[] = [
 </script>
 
 <template>
-  <v-container class="pa-4">
-    <!-- Hero Section -->
-    <v-row justify="center" class="mb-8">
+  <OuterLayout>
+    <template #content>
+      <v-container class="pa-4">
+        <!-- Hero Section -->
+        <v-row justify="center" class="mb-8">
       <v-col cols="12" :md="mdAndUp ? 10 : 12">
         <v-sheet
           :style="`background: linear-gradient(135deg, ${pbcmColors.primary} 0%, ${pbcmColors.secondary} 100%)`"
@@ -111,4 +114,6 @@ const missionSections: MissionSection[] = [
     </v-row>
 
   </v-container>
+    </template>
+  </OuterLayout>
 </template>

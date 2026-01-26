@@ -1,15 +1,119 @@
+<script lang="ts" setup>
+import OuterLayout from '@/layouts/outerLayout.vue'
+type Event = {
+  title: string
+  date: string
+  time: string
+  description: string
+  icon: string
+  color: 'primary' | 'secondary'
+}
+
+type QuickEvent = {
+  title: string
+  subtitle: string
+  day: string
+  icon: string
+  color: 'primary' | 'secondary'
+}
+
+const quickEvents: QuickEvent[] = [
+  {
+    title: 'Sunday Service',
+    subtitle: '10:00 AM - Main Sanctuary',
+    day: 'Sun',
+    icon: 'mdi-church',
+    color: 'primary'
+  },
+  {
+    title: 'Bible Study',
+    subtitle: '7:00 PM - Fellowship Hall',
+    day: 'Wed',
+    icon: 'mdi-book-open-variant',
+    color: 'secondary'
+  },
+  {
+    title: 'Prayer Meeting',
+    subtitle: '6:00 PM - Prayer Room',
+    day: 'Fri',
+    icon: 'mdi-hands-pray',
+    color: 'primary'
+  },
+  {
+    title: 'Youth Fellowship',
+    subtitle: '4:00 PM - Youth Center',
+    day: 'Sat',
+    icon: 'mdi-account-group',
+    color: 'secondary'
+  }
+]
+
+const upcomingEvents: Event[] = [
+  {
+    title: 'Mission Sunday',
+    date: 'February 2, 2026',
+    time: '10:00 AM',
+    description: 'Join us as we celebrate our missionary work and hear testimonies from our mission field.',
+    icon: 'mdi-earth',
+    color: 'primary'
+  },
+  {
+    title: 'Community Outreach',
+    date: 'February 8, 2026',
+    time: '8:00 AM',
+    description: 'Help us serve our community through feeding programs and medical assistance.',
+    icon: 'mdi-heart-multiple',
+    color: 'secondary'
+  },
+  {
+    title: 'Baptism Service',
+    date: 'February 15, 2026',
+    time: '11:00 AM',
+    description: 'Witness new believers take their step of faith through water baptism.',
+    icon: 'mdi-water',
+    color: 'primary'
+  },
+  {
+    title: 'Marriage Retreat',
+    date: 'February 21-23, 2026',
+    time: '6:00 PM',
+    description: 'Strengthen your marriage through this special weekend retreat for couples.',
+    icon: 'mdi-heart',
+    color: 'secondary'
+  },
+  {
+    title: 'Easter Celebration',
+    date: 'April 12, 2026',
+    time: '6:00 AM',
+    description: 'Celebrate the resurrection of our Lord Jesus Christ with sunrise service and fellowship.',
+    icon: 'mdi-cross',
+    color: 'primary'
+  },
+  {
+    title: 'Summer Camp',
+    date: 'May 15-20, 2026',
+    time: 'All Day',
+    description: 'A week-long camp for children and teenagers filled with fun, learning, and spiritual growth.',
+    icon: 'mdi-campfire',
+    color: 'secondary'
+  }
+]
+</script>
+
 <template>
-  <v-container class="page-container">
-    <v-row justify="center">
-      <v-col cols="12" md="10">
-        <div class="text-center mb-8">
-          <h1 class="text-h2 font-weight-bold mb-4 pbcm-gradient-text">
-            Upcoming Events
-          </h1>
-          <p class="text-h6 mb-6">
-            Join us for these special occasions and activities
-          </p>
-        </div>
+  <OuterLayout>
+    <template #content>
+      <v-container class="page-container">
+        <v-row justify="center">
+          <v-col cols="12" md="10">
+            <div class="text-center mb-8">
+              <h1 class="text-h2 font-weight-bold mb-4 pbcm-gradient-text">
+                Upcoming Events
+              </h1>
+              <p class="text-h6 mb-6">
+                Join us for these special occasions and activities
+              </p>
+            </div>
 
         <v-row>
           <v-col cols="12" lg="8">
@@ -127,108 +231,11 @@
       </v-col>
     </v-row>
   </v-container>
+    </template>
+  </OuterLayout>
 </template>
 
-<script lang="ts" setup>
-type Event = {
-  title: string
-  date: string
-  time: string
-  description: string
-  icon: string
-  color: 'primary' | 'secondary'
-}
 
-type QuickEvent = {
-  title: string
-  subtitle: string
-  day: string
-  icon: string
-  color: 'primary' | 'secondary'
-}
-
-const quickEvents: QuickEvent[] = [
-  {
-    title: 'Sunday Service',
-    subtitle: '10:00 AM - Main Sanctuary',
-    day: 'Sun',
-    icon: 'mdi-church',
-    color: 'primary'
-  },
-  {
-    title: 'Bible Study',
-    subtitle: '7:00 PM - Fellowship Hall',
-    day: 'Wed',
-    icon: 'mdi-book-open-variant',
-    color: 'secondary'
-  },
-  {
-    title: 'Prayer Meeting',
-    subtitle: '6:00 PM - Prayer Room',
-    day: 'Fri',
-    icon: 'mdi-hands-pray',
-    color: 'primary'
-  },
-  {
-    title: 'Youth Fellowship',
-    subtitle: '4:00 PM - Youth Center',
-    day: 'Sat',
-    icon: 'mdi-account-group',
-    color: 'secondary'
-  }
-]
-
-const upcomingEvents: Event[] = [
-  {
-    title: 'Mission Sunday',
-    date: 'February 2, 2026',
-    time: '10:00 AM',
-    description: 'Join us as we celebrate our missionary work and hear testimonies from our mission field.',
-    icon: 'mdi-earth',
-    color: 'primary'
-  },
-  {
-    title: 'Community Outreach',
-    date: 'February 8, 2026',
-    time: '8:00 AM',
-    description: 'Help us serve our community through feeding programs and medical assistance.',
-    icon: 'mdi-heart-multiple',
-    color: 'secondary'
-  },
-  {
-    title: 'Baptism Service',
-    date: 'February 15, 2026',
-    time: '11:00 AM',
-    description: 'Witness new believers take their step of faith through water baptism.',
-    icon: 'mdi-water',
-    color: 'primary'
-  },
-  {
-    title: 'Marriage Retreat',
-    date: 'February 21-23, 2026',
-    time: '6:00 PM',
-    description: 'Strengthen your marriage through this special weekend retreat for couples.',
-    icon: 'mdi-heart',
-    color: 'secondary'
-  },
-  {
-    title: 'Easter Celebration',
-    date: 'April 12, 2026',
-    time: '6:00 AM',
-    description: 'Celebrate the resurrection of our Lord Jesus Christ with sunrise service and fellowship.',
-    icon: 'mdi-cross',
-    color: 'primary'
-  },
-  {
-    title: 'Summer Camp',
-    date: 'May 15-20, 2026',
-    time: 'All Day',
-    description: 'A week-long camp for children and teenagers filled with fun, learning, and spiritual growth.',
-    icon: 'mdi-campfire',
-    color: 'secondary'
-  }
-]
-</script>
 
 <style scoped>
 .page-container {

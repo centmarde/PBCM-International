@@ -1,129 +1,6 @@
-<template>
-  <v-container class="page-container">
-    <v-row justify="center">
-      <v-col cols="12" md="8">
-        <div class="text-center mb-8">
-          <h1 class="text-h2 font-weight-bold mb-4 pbcm-gradient-text">
-            Contact Us
-          </h1>
-          <p class="text-h6 mb-6">
-            We'd love to hear from you
-          </p>
-        </div>
-
-        <v-row>
-          <!-- Contact Information -->
-          <v-col cols="12" md="6">
-            <v-card elevation="4" class="h-100">
-              <v-card-title class="text-h5 text-center py-6">
-                <v-icon icon="mdi-map-marker" color="primary" class="me-2" />
-                Get In Touch
-              </v-card-title>
-              <v-card-text class="pa-6">
-                <div v-for="contact in contactInfo" :key="contact.type" class="contact-item mb-4">
-                  <div class="d-flex align-center mb-2">
-                    <v-icon :icon="contact.icon" :color="contact.color" class="me-3" />
-                    <h4 class="text-h6">{{ contact.type }}</h4>
-                  </div>
-                  <p class="ml-9 mb-0">{{ contact.value }}</p>
-                  <p v-if="contact.subtitle" class="ml-9 text-caption opacity-75">
-                    {{ contact.subtitle }}
-                  </p>
-                </div>
-
-                <v-divider class="my-4" />
-
-                <div class="text-center">
-                  <h4 class="text-h6 mb-3">Follow Us</h4>
-                  <div class="d-flex justify-center ga-2">
-                    <v-btn
-                      v-for="social in socialMedia"
-                      :key="social.platform"
-                      :icon="social.icon"
-                      :color="social.color"
-                      variant="outlined"
-                      size="large"
-                      :href="social.url"
-                      target="_blank"
-                    />
-                  </div>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <!-- Contact Form -->
-          <v-col cols="12" md="6">
-            <v-card elevation="4" class="h-100">
-              <v-card-title class="text-h5 text-center py-6">
-                <v-icon icon="mdi-email-send" color="secondary" class="me-2" />
-                Send us a Message
-              </v-card-title>
-              <v-card-text class="pa-6">
-                <v-form ref="contactForm">
-                  <v-text-field
-                    v-model="form.name"
-                    label="Full Name"
-                    prepend-inner-icon="mdi-account"
-                    variant="outlined"
-                    color="primary"
-                    class="mb-4"
-                    :rules="[rules.required]"
-                  />
-
-                  <v-text-field
-                    v-model="form.email"
-                    label="Email Address"
-                    prepend-inner-icon="mdi-email"
-                    variant="outlined"
-                    color="primary"
-                    class="mb-4"
-                    :rules="[rules.required, rules.email]"
-                  />
-
-                  <v-select
-                    v-model="form.subject"
-                    :items="subjectOptions"
-                    label="Subject"
-                    prepend-inner-icon="mdi-tag"
-                    variant="outlined"
-                    color="primary"
-                    class="mb-4"
-                    :rules="[rules.required]"
-                  />
-
-                  <v-textarea
-                    v-model="form.message"
-                    label="Message"
-                    prepend-inner-icon="mdi-message-text"
-                    variant="outlined"
-                    color="primary"
-                    rows="4"
-                    class="mb-4"
-                    :rules="[rules.required]"
-                  />
-
-                  <v-btn
-                    color="primary"
-                    size="large"
-                    block
-                    prepend-icon="mdi-send"
-                    @click="submitForm"
-                    :loading="isSubmitting"
-                  >
-                    Send Message
-                  </v-btn>
-                </v-form>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
-  </v-container>
-</template>
 
 <script lang="ts" setup>
+import OuterLayout from '@/layouts/outerLayout.vue'
 type ContactInfo = {
   type: string
   value: string
@@ -239,6 +116,136 @@ const submitForm = async () => {
   alert('Thank you for your message! We will get back to you soon.')
 }
 </script>
+
+<template>
+  <OuterLayout>
+    <template #content>
+      <v-container class="page-container">
+        <v-row justify="center">
+          <v-col cols="12" md="8">
+            <div class="text-center mb-8">
+              <h1 class="text-h2 font-weight-bold mb-4 pbcm-gradient-text">
+                Contact Us
+              </h1>
+              <p class="text-h6 mb-6">
+                We'd love to hear from you
+              </p>
+            </div>
+
+        <v-row>
+          <!-- Contact Information -->
+          <v-col cols="12" md="6">
+            <v-card elevation="4" class="h-100">
+              <v-card-title class="text-h5 text-center py-6">
+                <v-icon icon="mdi-map-marker" color="primary" class="me-2" />
+                Get In Touch
+              </v-card-title>
+              <v-card-text class="pa-6">
+                <div v-for="contact in contactInfo" :key="contact.type" class="contact-item mb-4">
+                  <div class="d-flex align-center mb-2">
+                    <v-icon :icon="contact.icon" :color="contact.color" class="me-3" />
+                    <h4 class="text-h6">{{ contact.type }}</h4>
+                  </div>
+                  <p class="ml-9 mb-0">{{ contact.value }}</p>
+                  <p v-if="contact.subtitle" class="ml-9 text-caption opacity-75">
+                    {{ contact.subtitle }}
+                  </p>
+                </div>
+
+                <v-divider class="my-4" />
+
+                <div class="text-center">
+                  <h4 class="text-h6 mb-3">Follow Us</h4>
+                  <div class="d-flex justify-center ga-2">
+                    <v-btn
+                      v-for="social in socialMedia"
+                      :key="social.platform"
+                      :icon="social.icon"
+                      :color="social.color"
+                      variant="outlined"
+                      size="large"
+                      :href="social.url"
+                      target="_blank"
+                    />
+                  </div>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+
+          <!-- Contact Form -->
+          <v-col cols="12" md="6">
+            <v-card elevation="4" class="h-100">
+              <v-card-title class="text-h5 text-center py-6">
+                <v-icon icon="mdi-email-send" color="secondary" class="me-2" />
+                Send us a Message
+              </v-card-title>
+              <v-card-text class="pa-6">
+                <v-form ref="contactForm">
+                  <v-text-field
+                    v-model="form.name"
+                    label="Full Name"
+                    prepend-inner-icon="mdi-account"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-4"
+                    :rules="[rules.required]"
+                  />
+
+                  <v-text-field
+                    v-model="form.email"
+                    label="Email Address"
+                    prepend-inner-icon="mdi-email"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-4"
+                    :rules="[rules.required, rules.email]"
+                  />
+
+                  <v-select
+                    v-model="form.subject"
+                    :items="subjectOptions"
+                    label="Subject"
+                    prepend-inner-icon="mdi-tag"
+                    variant="outlined"
+                    color="primary"
+                    class="mb-4"
+                    :rules="[rules.required]"
+                  />
+
+                  <v-textarea
+                    v-model="form.message"
+                    label="Message"
+                    prepend-inner-icon="mdi-message-text"
+                    variant="outlined"
+                    color="primary"
+                    rows="4"
+                    class="mb-4"
+                    :rules="[rules.required]"
+                  />
+
+                  <v-btn
+                    color="primary"
+                    size="large"
+                    block
+                    prepend-icon="mdi-send"
+                    @click="submitForm"
+                    :loading="isSubmitting"
+                  >
+                    Send Message
+                  </v-btn>
+                </v-form>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+  </v-container>
+    </template>
+  </OuterLayout>
+</template>
+
 
 <style scoped>
 .page-container {
