@@ -1,66 +1,5 @@
-<template>
-  <v-container class="page-container">
-    <v-row justify="center">
-      <v-col cols="12" md="10">
-        <div class="text-center mb-8">
-          <h1 class="text-h2 font-weight-bold mb-4 pbcm-gradient-text">
-            Our Ministries
-          </h1>
-          <p class="text-h6 mb-6">
-            Serving God and Community Through Various Ministries
-          </p>
-        </div>
-
-        <v-row>
-          <v-col cols="12" md="6" lg="4" v-for="ministry in ministries" :key="ministry.name">
-            <v-card elevation="4" class="h-100 ministry-card">
-              <v-img
-                :src="ministry.image"
-                height="200"
-                class="ministry-image"
-                cover
-              >
-                <div class="ministry-overlay">
-                  <v-icon :icon="ministry.icon" size="64" color="white" />
-                </div>
-              </v-img>
-
-              <v-card-title class="text-h5 text-center py-4">
-                {{ ministry.name }}
-              </v-card-title>
-
-              <v-card-text class="pa-6">
-                <p class="mb-4">{{ ministry.description }}</p>
-
-                <div class="ministry-details mb-4">
-                  <v-chip color="primary" variant="outlined" size="small" class="me-2 mb-2">
-                    <v-icon icon="mdi-account-group" start />
-                    {{ ministry.leader }}
-                  </v-chip>
-                  <v-chip color="secondary" variant="outlined" size="small" class="mb-2">
-                    <v-icon icon="mdi-calendar" start />
-                    {{ ministry.schedule }}
-                  </v-chip>
-                </div>
-
-                <v-btn
-                  :color="ministry.color"
-                  variant="outlined"
-                  block
-                  prepend-icon="mdi-arrow-right"
-                >
-                  Learn More
-                </v-btn>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
-  </v-container>
-</template>
-
 <script lang="ts" setup>
+import OuterLayout from '@/layouts/outerLayout.vue'
 type Ministry = {
   name: string
   description: string
@@ -128,6 +67,74 @@ const ministries: Ministry[] = [
   }
 ]
 </script>
+
+<template>
+  <OuterLayout>
+    <template #content>
+      <v-container class="page-container">
+        <v-row justify="center">
+          <v-col cols="12" md="10">
+            <div class="text-center mb-8">
+              <h1 class="text-h2 font-weight-bold mb-4 pbcm-gradient-text">
+                Our Ministries
+              </h1>
+              <p class="text-h6 mb-6">
+                Serving God and Community Through Various Ministries
+              </p>
+            </div>
+
+        <v-row>
+          <v-col cols="12" md="6" lg="4" v-for="ministry in ministries" :key="ministry.name">
+            <v-card elevation="4" class="h-100 ministry-card">
+              <v-img
+                :src="ministry.image"
+                height="200"
+                class="ministry-image"
+                cover
+              >
+                <div class="ministry-overlay">
+                  <v-icon :icon="ministry.icon" size="64" color="white" />
+                </div>
+              </v-img>
+
+              <v-card-title class="text-h5 text-center py-4">
+                {{ ministry.name }}
+              </v-card-title>
+
+              <v-card-text class="pa-6">
+                <p class="mb-4">{{ ministry.description }}</p>
+
+                <div class="ministry-details mb-4">
+                  <v-chip color="primary" variant="outlined" size="small" class="me-2 mb-2">
+                    <v-icon icon="mdi-account-group" start />
+                    {{ ministry.leader }}
+                  </v-chip>
+                  <v-chip color="secondary" variant="outlined" size="small" class="mb-2">
+                    <v-icon icon="mdi-calendar" start />
+                    {{ ministry.schedule }}
+                  </v-chip>
+                </div>
+
+                <v-btn
+                  :color="ministry.color"
+                  variant="outlined"
+                  block
+                  prepend-icon="mdi-arrow-right"
+                >
+                  Learn More
+                </v-btn>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+  </v-container>
+    </template>
+  </OuterLayout>
+</template>
+
+
 
 <style scoped>
 .page-container {
