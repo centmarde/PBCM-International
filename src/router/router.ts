@@ -9,6 +9,7 @@ const Ministries = () => import('@/pages/ministries.vue')
 const Events = () => import('@/pages/events.vue')
 const Contact = () => import('@/pages/contact.vue')
 const Mission = () => import('@/pages/missionView.vue')
+const OurBeliefs = () => import('@/pages/ourBeliefs.vue')
 
 // Import layout
 const DefaultLayout = () => import('@/layouts/default.vue')
@@ -80,6 +81,15 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: 'Our Mission - PBCM',
           description: 'Learn about the mission and vision of Philippine Christian Bible Missionary'
+        }
+      },
+      {
+        path: '/our-beliefs',
+        name: 'OurBeliefs',
+        component: OurBeliefs,
+        meta: {
+          title: 'Our Beliefs - PBCM',
+          description: 'Discover the core beliefs and values of Philippine Christian Bible Missionary'
         }
       }
     ]

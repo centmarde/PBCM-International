@@ -19,7 +19,7 @@ const footerSections: FooterSection[] = [
     title: 'About PBCM',
     links: [
       { title: 'Our Mission', href: '/mission' },
-      { title: 'Our Beliefs', href: '/beliefs' },
+      { title: 'Our Beliefs', href: '/our-beliefs' },
       { title: 'Leadership', href: '/leadership' },
       { title: 'History', href: '/history' },
     ]
