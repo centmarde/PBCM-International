@@ -12,6 +12,8 @@ const Mission = () => import('@/pages/missionView.vue')
 const OurBeliefs = () => import('@/pages/ourBeliefs.vue')
 const Leadership = () => import('@/pages/leadershipView.vue')
 const History = () => import('@/pages/historyView.vue')
+const Auth = () => import('@/pages/Auth.vue')
+const profile = () => import('@/pages/profileView.vue')
 
 // Import layout
 const DefaultLayout = () => import('@/layouts/default.vue')
@@ -111,7 +113,25 @@ const routes: RouteRecordRaw[] = [
           title: 'History - PBCM',
           description: 'Learn about the history and journey of Philippine Christian Bible Missionary'
         }
-      }
+      },
+      {
+        path: '/Auth',
+        name: 'Auth',
+        component: Auth,
+        meta: {
+          title: 'Authentication - PBCM',
+          description: 'Login or register to access your account'
+        }
+      },
+      {
+        path: '/profile',
+        name: 'Profile',
+        component: profile,
+        meta: { requiresAuth: true,
+          title: 'Profile - PBCM',
+          description: 'View and manage your profile information'
+        }
+      },
     ]
   },
   // Catch all 404 - redirect to home
