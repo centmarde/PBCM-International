@@ -14,249 +14,220 @@ type ProfileFormData = {
 }
 
 export const useProfileStore = defineStore('profile', () => {
-  /* --------------------------------
+  /* ----------------------------
      STATE
-  -------------------------------- */
-  const profileData = ref<ProfileFormData | null>(null)
+  ---------------------------- */
+  const profileData = ref<ProfileFormData>({
+    firstname: '',
+    lastname: '',
+    username: '',
+    email: '',
+    phone_number: '',
+    job: '',
+    avatar_url: ''
+  })
+
   const loading = ref(false)
   const uploading = ref(false)
   const errorMessage = ref<string | null>(null)
   const successMessage = ref<string | null>(null)
 
-  /* --------------------------------
-     GETTERS
-  -------------------------------- */
-  const isProfileLoaded = computed(() => !!profileData.value)
+  /* ----------------------------
+     COMPUTED
+  ---------------------------- */
+  const isProfileLoaded = computed(() => !!profileData.value.email)
 
   const hasChanges = computed(() => {
-    if (!profileData.value) return false
-    const authStore = useAuthStore()
-    const currentUser = authStore.user
+    const auth = useAuthStore()
+    if (!auth.user) return false
 
-    if (!currentUser) return false
+    const [firstname, lastname] = auth.user.name.split(' ')
 
     return (
-      profileData.value.firstname !== currentUser.name.split(' ')[0] ||
-      profileData.value.lastname !== currentUser.name.split(' ')[1] ||
-      profileData.value.username !== currentUser.username ||
-      profileData.value.email !== currentUser.email ||
-      profileData.value.phone_number !== currentUser.phone_number ||
-      profileData.value.job !== currentUser.job ||
-      profileData.value.avatar_url !== currentUser.avatar_url
+      profileData.value.firstname !== firstname ||
+      profileData.value.lastname !== lastname ||
+      profileData.value.username !== auth.user.username ||
+      profileData.value.email !== auth.user.email ||
+      profileData.value.phone_number !== auth.user.phone_number ||
+      profileData.value.job !== auth.user.job ||
+      profileData.value.avatar_url !== auth.user.avatar_url
     )
   })
 
-  /* --------------------------------
-     ACTIONS
-  -------------------------------- */
-
-  /**
-   * Load profile data from Supabase
-   */
+  /* ----------------------------
+     LOAD PROFILE
+  ---------------------------- */
   async function loadProfile(userId: string) {
     loading.value = true
     errorMessage.value = null
 
-    try {
-      const { data: profile, error } = await supabase
-        .from('users_information')
-        .select('*')
-        .eq('id', userId)
-        .single()
+    const { data, error } = await supabase
+      .from('users_information')
+      .select('*')
+      .eq('id', userId)
+      .single()
 
-      if (error) throw error
-
-      profileData.value = {
-        firstname: profile.firstname,
-        lastname: profile.lastname,
-        username: profile.username,
-        email: profile.email,
-        phone_number: profile.phone_number,
-        job: profile.job || '',
-        avatar_url: profile.avatar_url || '',
-      }
-    } catch (err: any) {
-      errorMessage.value = err.message ?? 'Failed to load profile'
-      console.error('Load profile error:', err)
-    } finally {
+    if (error || !data) {
+      errorMessage.value = error?.message || 'Failed to load profile'
       loading.value = false
+      return
     }
+
+    profileData.value = {
+      firstname: data.firstname ?? '',
+      lastname: data.lastname ?? '',
+      username: data.username ?? '',
+      email: data.email ?? '',
+      phone_number: data.phone_number ?? '',
+      job: data.job ?? '',
+      avatar_url: data.avatar_url ?? ''
+    }
+
+    loading.value = false
   }
 
-  /**
-   * Upload avatar to Supabase Storage
-   * Stores in path: avatars/{userId}/{fileName}
-   */
+  /* ----------------------------
+     AVATAR UPLOAD
+  ---------------------------- */
   async function uploadAvatar(userId: string, file: File): Promise<string | null> {
-    uploading.value = true
-    errorMessage.value = null
+  uploading.value = true
+  errorMessage.value = null
 
-    try {
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-      // Store avatar in user-specific folder for better RLS policy enforcement
-      const filePath = `${userId}/${fileName}`
+  const ext = file.name.split('.').pop()
+  const path = `${userId}/${Date.now()}.${ext}`
 
-      // Delete old avatar if it exists
-      const authStore = useAuthStore()
-      if (authStore.user?.avatar_url) {
-        try {
-          // Extract the path from the URL
-          const urlPath = authStore.user.avatar_url.split('/storage/v1/object/public/avatars/')[1]
-          if (urlPath) {
-            await supabase.storage.from('avatars').remove([urlPath])
-          }
-        } catch (err) {
-          console.warn('Could not delete old avatar:', err)
-        }
-      }
-
-      // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, { upsert: true })
-
-      if (uploadError) throw uploadError
-
-      // Get public URL
-      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath)
-
-      successMessage.value = 'Avatar uploaded successfully!'
-      return data.publicUrl
-    } catch (err: any) {
-      errorMessage.value = err.message ?? 'Failed to upload avatar'
-      console.error('Upload avatar error:', err)
-      return null
-    } finally {
-      uploading.value = false
+  const auth = useAuthStore()
+  
+  // Remove old avatar if exists
+  if (auth.user?.avatar_url) {
+    const oldPath = auth.user.avatar_url.split('/avatars/')[1]
+    if (oldPath) {
+      await supabase.storage.from('avatars').remove([oldPath])
     }
   }
 
-  /**
-   * Update profile in Supabase and Pinia auth store
-   */
-  async function updateProfile(userId: string) {
-    if (!profileData.value) {
-      errorMessage.value = 'Profile data is empty'
-      return false
-    }
+  const upload = await supabase.storage
+    .from('avatars')
+    .upload(path, file, { upsert: true })
 
+  if (upload.error) {
+    errorMessage.value = upload.error.message
+    uploading.value = false
+    return null
+  }
+
+  const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+  const publicUrl = data.publicUrl
+
+  // ✅ UPDATE DATABASE (THIS WAS MISSING)
+  const dbUpdate = await supabase
+    .from('users_information')
+    .update({
+      avatar_url: publicUrl,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', userId)
+
+  if (dbUpdate.error) {
+    errorMessage.value = dbUpdate.error.message
+    uploading.value = false
+    return null
+  }
+
+  // ✅ UPDATE PROFILE STORE
+  profileData.value.avatar_url = publicUrl
+
+  // ✅ SYNC AUTH STORE (THIS FIXES NAVBAR)
+  auth.updateUser({ avatar_url: publicUrl })
+
+  successMessage.value = 'Avatar uploaded successfully'
+  uploading.value = false
+
+  return publicUrl
+}
+
+  /* ----------------------------
+     UPDATE PROFILE
+  ---------------------------- */
+  async function updateProfile(userId: string): Promise<boolean> {
     loading.value = true
     errorMessage.value = null
     successMessage.value = null
 
-    try {
-      const { error } = await supabase
-        .from('users_information')
-        .update({
-          firstname: profileData.value.firstname,
-          lastname: profileData.value.lastname,
-          username: profileData.value.username,
-          email: profileData.value.email,
-          phone_number: profileData.value.phone_number,
-          job: profileData.value.job || null,
-          avatar_url: profileData.value.avatar_url || null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', userId)
+    const update = await supabase
+      .from('users_information')
+      .update({
+        ...profileData.value,
+        job: profileData.value.job || null,
+        avatar_url: profileData.value.avatar_url || null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', userId)
 
-      if (error) throw error
-
-      // Update auth store with new profile data
-      // This will automatically update sessionStorage
-      const authStore = useAuthStore()
-      const updatedUser = {
-        id: userId,
-        name: `${profileData.value.firstname} ${profileData.value.lastname}`,
-        email: profileData.value.email,
-        username: profileData.value.username,
-        phone_number: profileData.value.phone_number,
-        job: profileData.value.job,
-        avatar_url: profileData.value.avatar_url,
-      }
-      
-      authStore.setUser(updatedUser)
-
-      successMessage.value = 'Profile updated successfully! ✅'
-      return true
-    } catch (err: any) {
-      errorMessage.value = err.message ?? 'Failed to update profile'
-      console.error('Update profile error:', err)
-      return false
-    } finally {
+    if (update.error) {
+      errorMessage.value = update.error.message
       loading.value = false
+      return false
     }
+
+    const auth = useAuthStore()
+    auth.updateUser({
+      id: userId,
+      name: `${profileData.value.firstname} ${profileData.value.lastname}`,
+      email: profileData.value.email,
+      username: profileData.value.username,
+      phone_number: profileData.value.phone_number,
+      job: profileData.value.job,
+      avatar_url: profileData.value.avatar_url
+    })
+
+    successMessage.value = 'Profile updated successfully'
+    loading.value = false
+    return true
   }
 
-  /**
-   * Set profile field value
-   */
-  function setField(field: keyof ProfileFormData, value: string) {
-    if (!profileData.value) return
+  /* ----------------------------
+     HELPERS
+  ---------------------------- */
+  function setField<K extends keyof ProfileFormData>(
+    field: K,
+    value: ProfileFormData[K]
+  ) {
     profileData.value[field] = value
   }
 
-  /**
-   * Set avatar URL
-   */
   function setAvatarUrl(url: string) {
-    if (!profileData.value) return
     profileData.value.avatar_url = url
   }
 
-  /**
-   * Clear messages
-   */
   function clearMessages() {
     errorMessage.value = null
     successMessage.value = null
   }
 
-  /**
-   * Delete user's avatar from storage
-   */
-  async function deleteAvatar(userId: string, avatarUrl: string): Promise<boolean> {
-    try {
-      if (!avatarUrl) return true
+  async function deleteAvatar(avatarUrl: string): Promise<boolean> {
+    if (!avatarUrl) return true
+    const path = avatarUrl.split('/avatars/')[1]
+    if (!path) return true
 
-      // Extract path from public URL
-      const urlPath = avatarUrl.split('/storage/v1/object/public/avatars/')[1]
-      if (!urlPath) return true
-
-      const { error } = await supabase.storage
-        .from('avatars')
-        .remove([urlPath])
-
-      if (error) {
-        console.warn('Could not delete avatar:', error)
-        return false
-      }
-      return true
-    } catch (err: any) {
-      console.warn('Avatar deletion error:', err)
-      return false
-    }
+    const { error } = await supabase.storage.from('avatars').remove([path])
+    return !error
   }
 
   return {
-    // State
     profileData,
     loading,
     uploading,
     errorMessage,
     successMessage,
-
-    // Getters
     isProfileLoaded,
     hasChanges,
-
-    // Actions
     loadProfile,
     uploadAvatar,
     updateProfile,
     setField,
     setAvatarUrl,
     clearMessages,
-    deleteAvatar,
+    deleteAvatar
   }
 })

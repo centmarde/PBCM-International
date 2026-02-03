@@ -1,61 +1,41 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useDisplay } from 'vuetify'
-import { useRouter } from 'vue-router'
-import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
+
+const firstName = ref('')
+const lastName = ref('')
+const username = ref('')
+const phoneNumber = ref('')
+const email = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const agreeToTerms = ref(false)
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+const loading = ref(false)
+const errorMessage = ref<string | null>(null)
+const successMessage = ref<string | null>(null)
 
 const emit = defineEmits<{
   (e: 'success'): void
 }>()
 
-const router = useRouter()
-const authStore = useAuthStore()
-const { xs } = useDisplay()
-const firstName = ref('')
-const lastName = ref('')
-const username = ref('')
-const phoneNumber = ref('')
-// const job = ref('')
-const email = ref('')
-const password = ref('')
-const confirmPassword = ref('')
-const loading = ref(false)
-const errorMessage = ref<string | null>(null)
-const successMessage = ref<string | null>(null)
-const showPassword = ref(false)
-const showConfirmPassword = ref(false)
-const agreeToTerms = ref(false)
-
-  // Reset form
 const resetForm = () => {
-    firstName.value = ""
-    lastName.value = ""
-    username.value = ""
-    phoneNumber.value = ""
-    email.value = ""
-    password.value = ""
-    confirmPassword.value = ""
-    agreeToTerms.value = false
-    errorMessage.value = null
-  }
+  firstName.value = ''
+  lastName.value = ''
+  username.value = ''
+  phoneNumber.value = ''
+  email.value = ''
+  password.value = ''
+  confirmPassword.value = ''
+  agreeToTerms.value = false
+  errorMessage.value = null
+  successMessage.value = null
+}
 
 const passwordsMatch = () => password.value === confirmPassword.value
-
-const isUsernameTaken = async (): Promise<boolean> => {
-  const { data, error } = await supabase
-    .from('users_information')
-    .select('id')
-    .eq('username', username.value)
-    .maybeSingle()
-
-  if (error) {
-    console.error(error)
-    return false
-  }
-
-  return !!data
-}
 
 const register = async () => {
   if (!passwordsMatch()) {
@@ -64,88 +44,38 @@ const register = async () => {
   }
 
   if (!agreeToTerms.value) {
-    errorMessage.value = 'Please agree to the terms and conditions'
+    errorMessage.value = 'Please agree to terms'
     return
   }
 
   loading.value = true
-  errorMessage.value = null
-  successMessage.value = null
+  errorMessage.value = successMessage.value = null
 
-  try {
+  const result = await authStore.registerUser({
+    firstName: firstName.value,
+    lastName: lastName.value,
+    username: username.value,
+    phoneNumber: phoneNumber.value,
+    email: email.value,
+    password: password.value
+  })
 
-    /* 🔍 Check username first */
-    if (await isUsernameTaken()) {
-      errorMessage.value = 'Username is already taken'
-      loading.value = false
-      return
-    }
-
-    /* 1️⃣ Create Auth User */
-    const { data, error } = await supabase.auth.signUp({
-      email: email.value,
-      password: password.value,
-      options: {
-        data: {
-          firstname: firstName.value,
-          lastname: lastName.value,
-          username: username.value,
-          phone_number: phoneNumber.value
-        }
-      }
-    })
-
-    if (error) throw error
-    if (!data.user) throw new Error('User not created')
-
-    // /* 2️⃣ Insert Profile Row */
-    // const { error: profileError } = await supabase
-    //   .from('users_information')
-    //   .insert({
-    //     id: data.user.id,
-    //     firstname: firstName.value,
-    //     lastname: lastName.value,
-    //     username: username.value,
-    //     phone_number: phoneNumber.value,
-    //     email: email.value
-    //   })
-
-    // if (profileError) throw profileError
-
-    // 3️⃣ Store user in Pinia immediately after registration
-    authStore.setUser({
-      id: data.user.id,
-      name: `${firstName.value} ${lastName.value}`,
-      email: email.value,
-      username: username.value,
-      phone_number: phoneNumber.value,
-    })
-
-    successMessage.value =
-      'Account created successfully! Please check your email to verify your account 📧'
-
-    /* Optional: Reset form */
-    resetForm()
-
-    // Emit success
+  if (result.success) {
+    successMessage.value = 'Account created successfully! Check your email to confirm 📧'
     emit('success')
-
-    // Redirect to dashboard or home after 2 seconds
-    // setTimeout(() => {
-    //   router.push('/about')
-    // }, 2000)
-
-  } catch (err: any) {
-    errorMessage.value = err.message ?? 'Registration failed'
-  } finally {
-    loading.value = false
+    resetForm()
+  } else {
+    errorMessage.value = result.error ?? 'Registration failed'
   }
+
+  loading.value = false
 }
 </script>
 
 <template>
   <form @submit.prevent="register">
     <v-row class="my-4">
+      <!-- First & Last Name -->
       <v-col cols="12" sm="6">
         <v-text-field
           v-model="firstName"
@@ -174,6 +104,7 @@ const register = async () => {
         />
       </v-col>
 
+      <!-- Username -->
       <v-col cols="12">
         <v-text-field
           v-model="username"
@@ -188,34 +119,22 @@ const register = async () => {
         />
       </v-col>
 
+      <!-- Phone -->
       <v-col cols="12">
         <v-text-field
           v-model="phoneNumber"
           label="Phone Number"
-          placeholder="Enter your Phone Number"
+          placeholder="Enter your phone number"
           variant="outlined"
           density="comfortable"
           color="primary"
-          prepend-inner-icon="mdi-account-outline"
+          prepend-inner-icon="mdi-phone-outline"
           required
           :disabled="loading"
         />
       </v-col>
 
-      <!-- <v-col cols="12" sm="6">
-        <v-text-field
-          v-model="job"
-          label="Job"
-          placeholder="Enter your Job"
-          variant="outlined"
-          density="comfortable"
-          color="primary"
-          prepend-inner-icon="mdi-account-outline"
-          required
-          :disabled="loading"
-        />
-      </v-col> -->
-
+      <!-- Email -->
       <v-col cols="12">
         <v-text-field
           v-model="email"
@@ -231,17 +150,18 @@ const register = async () => {
         />
       </v-col>
 
+      <!-- Password -->
       <v-col cols="12">
         <v-text-field
           v-model="password"
           label="Password"
-          :type="showPassword ? 'text' : 'password'"
           placeholder="Create a password"
           variant="outlined"
           density="comfortable"
           color="primary"
           prepend-inner-icon="mdi-lock-outline"
           :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+          :type="showPassword ? 'text' : 'password'"
           required
           :disabled="loading"
           @click:append-inner="showPassword = !showPassword"
@@ -251,17 +171,18 @@ const register = async () => {
         </p>
       </v-col>
 
+      <!-- Confirm Password -->
       <v-col cols="12">
         <v-text-field
           v-model="confirmPassword"
           label="Confirm Password"
-          :type="showConfirmPassword ? 'text' : 'password'"
           placeholder="Confirm your password"
           variant="outlined"
           density="comfortable"
           color="primary"
           prepend-inner-icon="mdi-lock-outline"
           :append-inner-icon="showConfirmPassword ? 'mdi-eye-off' : 'mdi-eye'"
+          :type="showConfirmPassword ? 'text' : 'password'"
           required
           :disabled="loading"
           :error="confirmPassword.length > 0 && !passwordsMatch()"
@@ -274,14 +195,11 @@ const register = async () => {
         />
       </v-col>
 
+      <!-- Terms & Conditions -->
       <v-col cols="12">
-        <v-checkbox
-          v-model="agreeToTerms"
-          :disabled="loading"
-          color="primary"
-        >
+        <v-checkbox v-model="agreeToTerms" :disabled="loading" color="primary">
           <template #label>
-            <span class="text-body2">
+            <span>
               I agree to the
               <v-btn
                 to="/terms"
@@ -297,6 +215,7 @@ const register = async () => {
         </v-checkbox>
       </v-col>
 
+      <!-- Submit Button -->
       <v-col cols="12">
         <v-btn
           type="submit"
@@ -311,6 +230,7 @@ const register = async () => {
         </v-btn>
       </v-col>
 
+      <!-- Error Message -->
       <v-col v-if="errorMessage" cols="12">
         <v-alert
           type="error"
@@ -322,6 +242,7 @@ const register = async () => {
         </v-alert>
       </v-col>
 
+      <!-- Success Message -->
       <v-col v-if="successMessage" cols="12">
         <v-alert
           type="success"
@@ -335,9 +256,3 @@ const register = async () => {
     </v-row>
   </form>
 </template>
-
-<style scoped>
-form {
-  width: 100%;
-}
-</style>

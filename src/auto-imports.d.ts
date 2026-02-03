@@ -62,6 +62,10 @@ declare global {
   const useCssVars: typeof import('vue')['useCssVars']
   const useId: typeof import('vue')['useId']
   const useModel: typeof import('vue')['useModel']
+  const useNavbarActions: typeof import('./composables/outerNavbarComposables/useNavbarActions')['useNavbarActions']
+  const useNavbarAuth: typeof import('./composables/outerNavbarComposables/useNavbarAuth')['useNavbarAuth']
+  const useNavbarDrawer: typeof import('./composables/outerNavbarComposables/useNavbarDrawer')['useNavbarDrawer']
+  const useNavbarItems: typeof import('./composables/outerNavbarComposables/useNavbarItems')['useNavbarItems']
   const usePbcmRouter: typeof import('./composables/usePbcmRouter')['usePbcmRouter']
   const usePbcmTheme: typeof import('./composables/usePbcmTheme')['usePbcmTheme']
   const useRoute: typeof import('vue-router')['useRoute']
@@ -78,6 +82,9 @@ declare global {
   // @ts-ignore
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { NavItem } from './composables/outerNavbarComposables/useNavbarItems'
+  import('./composables/outerNavbarComposables/useNavbarItems')
 }
 
 // for vue template auto import
@@ -139,6 +146,10 @@ declare module 'vue' {
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
     readonly useId: UnwrapRef<typeof import('vue')['useId']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
+    readonly useNavbarActions: UnwrapRef<typeof import('./composables/outerNavbarComposables/useNavbarActions')['useNavbarActions']>
+    readonly useNavbarAuth: UnwrapRef<typeof import('./composables/outerNavbarComposables/useNavbarAuth')['useNavbarAuth']>
+    readonly useNavbarDrawer: UnwrapRef<typeof import('./composables/outerNavbarComposables/useNavbarDrawer')['useNavbarDrawer']>
+    readonly useNavbarItems: UnwrapRef<typeof import('./composables/outerNavbarComposables/useNavbarItems')['useNavbarItems']>
     readonly usePbcmTheme: UnwrapRef<typeof import('./composables/usePbcmTheme')['usePbcmTheme']>
     readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>

@@ -1,411 +1,188 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useDisplay } from 'vuetify'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { useProfileStore } from '@/stores/profile'
 import OuterLayout from '@/layouts/outerLayout.vue'
+import ProfileAvatar from '@/components/profileAvatar.vue'
 import { useRouter } from 'vue-router'
 
-/* --------------------------------
-   COMPOSABLES & STORES
--------------------------------- */
-const { xs, smAndDown, mdAndUp } = useDisplay()
-const authStore = useAuthStore()
-const profileStore = useProfileStore()
+/* ----------------------------
+   STORES
+---------------------------- */
+const auth = useAuthStore()
+const profile = useProfileStore()
 const router = useRouter()
 
-const { user: authUser } = storeToRefs(authStore)
+const { user } = storeToRefs(auth)
 const {
   profileData,
   loading,
   uploading,
   errorMessage,
   successMessage,
-  hasChanges,
-} = storeToRefs(profileStore)
+  hasChanges
+} = storeToRefs(profile)
 
-const { loadProfile, uploadAvatar, updateProfile, setField, setAvatarUrl, clearMessages, deleteAvatar } = profileStore
+const {
+  loadProfile,
+  uploadAvatar,
+  updateProfile,
+  setAvatarUrl,
+  clearMessages,
+  deleteAvatar
+} = profile
 
-/* --------------------------------
+/* ----------------------------
    LOCAL STATE
--------------------------------- */
+---------------------------- */
 const fileInput = ref<HTMLInputElement | null>(null)
 const previewUrl = ref<string | null>(null)
 const isSaving = ref(false)
 
-/* --------------------------------
+/* ----------------------------
    COMPUTED
--------------------------------- */
-const userInitials = computed(() => {
-  if (!authUser.value) return ''
-  return authUser.value.name
+---------------------------- */
+const initials = computed(() =>
+  user.value?.name
     .split(' ')
-    .map(p => p[0])
+    .map(n => n[0])
     .join('')
-    .toUpperCase()
+    .toUpperCase() || ''
+)
+
+const avatarUrl = computed(
+  () => previewUrl.value || profileData.value.avatar_url || null
+)
+
+/* ----------------------------
+   LOAD PROFILE
+---------------------------- */
+onMounted(() => {
+  if (user.value?.id) loadProfile(user.value.id)
 })
 
-const displayAvatarUrl = computed(() => {
-  return previewUrl.value || profileData.value?.avatar_url || null
-})
+/* ----------------------------
+   AVATAR ACTIONS
+---------------------------- */
+const triggerUpload = () => fileInput.value?.click()
 
-/* --------------------------------
-   LIFECYCLE
--------------------------------- */
-onMounted(async () => {
-  if (authUser.value?.id) {
-    await loadProfile(authUser.value.id)
-    if (profileData.value?.avatar_url) {
-      previewUrl.value = profileData.value.avatar_url
-    }
-  }
-})
+const handleFile = async (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file || !user.value?.id || !file.type.startsWith('image/')) return
 
-/* --------------------------------
-   ACTIONS
--------------------------------- */
-const triggerFileInput = () => {
-  fileInput.value?.click()
-}
+  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+  previewUrl.value = URL.createObjectURL(file)
 
-const handleAvatarSelect = async (event: Event) => {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
-
-  if (!file || !authUser.value?.id) return
-
-  // Validate file type
-  if (!file.type.startsWith('image/')) {
-    clearMessages()
-    return
-  }
-
-  // Create preview
-  const reader = new FileReader()
-  reader.onload = async (e) => {
-    previewUrl.value = e.target?.result as string
-  }
-  reader.readAsDataURL(file)
-
-  // Upload to Supabase
-  const avatarUrl = await uploadAvatar(authUser.value.id, file)
-  if (avatarUrl) {
-    setAvatarUrl(avatarUrl)
-  }
-}
-
-const handleSaveProfile = async () => {
-  if (!authUser.value?.id) return
-
-  isSaving.value = true
-  const success = await updateProfile(authUser.value.id)
-  isSaving.value = false
-
-  if (success) {
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      clearMessages()
-    }, 3000)
-  }
-}
-
-const handleCancel = () => {
-  // Reset preview
-  if (profileData.value?.avatar_url) {
-    previewUrl.value = profileData.value.avatar_url
-    router.push('/about')
-  } else {
-    previewUrl.value = null
-  }
+  const url = await uploadAvatar(user.value.id, file)
+  if (url) setAvatarUrl(url)
 }
 
 const handleRemoveAvatar = async () => {
-  if (!profileData.value?.avatar_url || !authUser.value?.id) return
+  if (!profileData.value.avatar_url || !user.value?.id) return
+  await deleteAvatar(profileData.value.avatar_url)
+  setAvatarUrl('')
+  previewUrl.value = null
+}
 
+/* ----------------------------
+   SAVE / CANCEL
+---------------------------- */
+const saveProfile = async () => {
+  if (!user.value?.id) return
   isSaving.value = true
-  const deleted = await deleteAvatar(authUser.value.id, profileData.value.avatar_url)
 
-  if (deleted) {
-    setAvatarUrl('')
-    previewUrl.value = null
-    await updateProfile(authUser.value.id)
-  }
-
+  const ok = await updateProfile(user.value.id)
   isSaving.value = false
+
+  if (ok) setTimeout(clearMessages, 3000)
+}
+
+const cancelEdit = () => {
+  previewUrl.value = null
+  router.push('/about')
 }
 </script>
 
 <template>
   <OuterLayout>
     <template #content>
-      <v-container class="py-6 py-md-8">
-        <!-- Page Title -->
-        <v-row justify="center" class="mb-8">
-          <v-col cols="12" md="8" lg="6">
-            <h1 class="text-h3 font-weight-bold pbcm-gradient-text">
-              Edit Profile
-            </h1>
-            <p class="text-subtitle1 text-medium-emphasis mt-2">
-              Update your personal information and profile picture
-            </p>
-          </v-col>
-        </v-row>
-
-        <!-- Profile Card -->
+      <v-container class="py-8">
         <v-row justify="center">
           <v-col cols="12" md="8" lg="6">
+
+            <h1 class="text-h3 font-weight-bold mb-6">
+              Edit Profile
+            </h1>
+
             <v-card class="pbcm-card elevation-8">
-              <v-card-text class="pa-6 pa-md-8">
-                <!-- Avatar Section -->
-                <div class="text-center mb-8">
-                  <div class="mb-4">
-                    <div
-                      v-if="displayAvatarUrl"
-                      class="avatar-container mx-auto"
-                      @click="triggerFileInput"
-                    >
-                      <v-img
-                        :src="displayAvatarUrl"
-                        alt="Profile Avatar"
-                        class="rounded-circle"
-                        style="width: 100%; height: 100%; object-fit: cover; object-position: center;"
-                      />
-                      <div class="avatar-overlay">
-                        <v-icon icon="mdi-camera" size="large" color="white" />
-                      </div>
-                    </div>
-                    <div
-                      v-else
-                      class="avatar-container mx-auto"
-                      @click="triggerFileInput"
-                    >
-                      <v-avatar color="primary" size="150" class="avatar-placeholder">
-                        <span class="text-h3 font-weight-bold text-white">
-                          {{ userInitials }}
-                        </span>
-                      </v-avatar>
-                      <div class="avatar-overlay">
-                        <v-icon icon="mdi-camera" size="large" color="white" />
-                      </div>
-                    </div>
-                  </div>
+              <v-card-text class="pa-6">
 
-                  <input
-                    ref="fileInput"
-                    type="file"
-                    accept="image/*"
-                    style="display: none"
-                    @change="handleAvatarSelect"
-                  />
+                <!-- Avatar -->
+                <ProfileAvatar
+                  :avatar-url="avatarUrl"
+                  :initials="initials"
+                  :loading="loading"
+                  :uploading="uploading"
+                  @upload="triggerUpload"
+                  @remove="handleRemoveAvatar"
+                />
 
-                  <p class="text-caption text-medium-emphasis mb-3">
-                    Click to upload a new profile picture
-                  </p>
+                <input
+                  ref="fileInput"
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  @change="handleFile"
+                />
 
-                  <!-- Remove Avatar Button -->
-                  <v-btn
-                    v-if="displayAvatarUrl"
-                    size="small"
-                    variant="outlined"
-                    color="error"
-                    icon
-                    class="ml-2"
-                    @click="handleRemoveAvatar"
-                    :disabled="isSaving || uploading"
-                    title="Remove avatar"
-                  >
-                    <v-icon icon="mdi-delete" />
-                  </v-btn>
+                <v-skeleton-loader
+                  v-if="loading"
+                  type="paragraph, paragraph"
+                  class="mt-6"
+                />
 
-                  <v-progress-linear
-                    v-if="uploading"
-                    indeterminate
-                    class="mt-2"
-                    color="primary"
-                  />
-                </div>
+                <!-- Form -->
+                <v-form v-else @submit.prevent="saveProfile">
+                  <v-text-field v-model="profileData.firstname" label="First Name" />
+                  <v-text-field v-model="profileData.lastname" label="Last Name" />
+                  <v-text-field v-model="profileData.username" label="Username" />
+                  <v-text-field v-model="profileData.email" label="Email" readonly />
+                  <v-text-field v-model="profileData.phone_number" label="Phone Number" />
+                  <v-text-field v-model="profileData.job" label="Job Title" />
 
-                <v-divider class="my-6" />
+                  <v-alert v-if="errorMessage" type="error" variant="tonal" class="mt-4">
+                    {{ errorMessage }}
+                  </v-alert>
 
-                <!-- Form Fields -->
-                <v-form @submit.prevent="handleSaveProfile">
-                  <!-- First Name & Last Name -->
-                  <v-row>
-                    <v-col cols="12" sm="6">
-                      <v-text-field
-                        label="First Name"
-                        :model-value="profileData?.firstname"
-                        :disabled="loading || isSaving"
-                        outlined
-                        density="comfortable"
-                        color="primary"
-                        prepend-inner-icon="mdi-account"
-                        @update:model-value="setField('firstname', $event)"
-                      />
-                    </v-col>
+                  <v-alert v-if="successMessage" type="success" variant="tonal" class="mt-4">
+                    {{ successMessage }}
+                  </v-alert>
 
-                    <v-col cols="12" sm="6">
-                      <v-text-field
-                        label="Last Name"
-                        :model-value="profileData?.lastname"
-                        :disabled="loading || isSaving"
-                        outlined
-                        density="comfortable"
-                        color="primary"
-                        prepend-inner-icon="mdi-account"
-                        @update:model-value="setField('lastname', $event)"
-                      />
-                    </v-col>
-                  </v-row>
-
-                  <!-- Username -->
-                  <v-row>
-                    <v-col cols="12">
-                      <v-text-field
-                        label="Username"
-                        :model-value="profileData?.username"
-                        :disabled="loading || isSaving"
-                        outlined
-                        density="comfortable"
-                        color="primary"
-                        prepend-inner-icon="mdi-at"
-                        @update:model-value="setField('username', $event)"
-                      />
-                    </v-col>
-                  </v-row>
-
-                  <!-- Email -->
-                  <v-row>
-                    <v-col cols="12">
-                      <v-text-field
-                        label="Email"
-                        type="email"
-                        :model-value="profileData?.email"
-                        readonly :disabled="loading || isSaving"
-                        outlined
-                        density="comfortable"
-                        color="primary"
-                        prepend-inner-icon="mdi-email"
-                        @update:model-value="setField('email', $event)"
-                      />
-                    </v-col>
-                  </v-row>
-
-                  <!-- Phone Number -->
-                  <v-row>
-                    <v-col cols="12">
-                      <v-text-field
-                        label="Phone Number"
-                        :model-value="profileData?.phone_number"
-                        :disabled="loading || isSaving"
-                        outlined
-                        density="comfortable"
-                        color="primary"
-                        prepend-inner-icon="mdi-phone"
-                        @update:model-value="setField('phone_number', $event)"
-                      />
-                    </v-col>
-                  </v-row>
-
-                  <!-- Job -->
-                  <v-row>
-                    <v-col cols="12">
-                      <v-text-field
-                        label="Job Title"
-                        :model-value="profileData?.job"
-                        :disabled="loading || isSaving"
-                        outlined
-                        density="comfortable"
-                        color="primary"
-                        prepend-inner-icon="mdi-briefcase"
-                        placeholder="e.g., Pastor, Teacher, Volunteer"
-                        @update:model-value="setField('job', $event)"
-                      />
-                    </v-col>
-                  </v-row>
-
-                  <!-- Messages -->
                   <v-row class="mt-4">
-                    <v-col cols="12">
-                      <v-expand-transition>
-                        <v-alert
-                          v-if="errorMessage"
-                          type="error"
-                          variant="tonal"
-                          closable
-                          class="mb-4"
-                          @click:close="clearMessages"
-                        >
-                          {{ errorMessage }}
-                        </v-alert>
-                      </v-expand-transition>
-
-                      <v-expand-transition>
-                        <v-alert
-                          v-if="successMessage"
-                          type="success"
-                          variant="tonal"
-                          closable
-                          class="mb-4"
-                          @click:close="clearMessages"
-                        >
-                          {{ successMessage }}
-                        </v-alert>
-                      </v-expand-transition>
-                    </v-col>
-                  </v-row>
-
-                  <!-- Action Buttons -->
-                  <v-row class="mt-6">
-                    <v-col cols="12" sm="6">
-                      <v-btn
-                        variant="outlined"
-                        color="primary"
-                        block
-                        size="large"
-                        @click="handleCancel"
-                        :disabled="isSaving"
-                      >
+                    <v-col cols="6">
+                      <v-btn block variant="outlined" @click="cancelEdit">
                         Cancel
                       </v-btn>
                     </v-col>
 
-                    <v-col cols="12" sm="6">
+                    <v-col cols="6">
                       <v-btn
-                        type="submit"
-                        color="primary"
                         block
-                        size="large"
+                        color="primary"
+                        type="submit"
                         :loading="isSaving"
                         :disabled="!hasChanges || isSaving"
-                        class="pbcm-button font-weight-bold"
                       >
-                        {{ isSaving ? 'Saving...' : 'Save Changes' }}
+                        Save Changes
                       </v-btn>
                     </v-col>
                   </v-row>
                 </v-form>
+
               </v-card-text>
             </v-card>
 
-            <!-- Info Card -->
-            <v-card class="mt-6 pbcm-card" :elevation="2">
-              <v-card-text class="pa-4">
-                <div class="d-flex align-center ga-3">
-                  <v-icon icon="mdi-information" color="primary" />
-                  <div>
-                    <p class="text-body2 font-weight-bold mb-1">
-                      Profile Information
-                    </p>
-                    <p class="text-caption text-medium-emphasis mb-0">
-                      Changes are saved to your account and displayed across the platform.
-                      Avatar changes appear instantly in the navigation bar.
-                    </p>
-                  </div>
-                </div>
-              </v-card-text>
-            </v-card>
           </v-col>
         </v-row>
       </v-container>
@@ -413,55 +190,4 @@ const handleRemoveAvatar = async () => {
   </OuterLayout>
 </template>
 
-<style scoped>
-.avatar-container {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  cursor: pointer;
-  display: inline-block;
-  border-radius: 50%;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.avatar-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;         /* fills container without stretching */
-  object-position: center;   /* centers the image inside the circle */
-  display: block;
-}
-
-.avatar-container:hover .avatar-overlay {
-  opacity: 1;
-}
-
-.avatar-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.avatar-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  .avatar-container {
-    width: 120px;
-    height: 120px;
-  }
-}
-</style>
+<style scoped src="@/assets/css/profile.css"></style>

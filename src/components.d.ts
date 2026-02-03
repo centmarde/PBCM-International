@@ -12,6 +12,7 @@ declare module 'vue' {
     Hero: typeof import('./components/Hero.vue')['default']
     LoginForm: typeof import('./components/auth/LoginForm.vue')['default']
     OuterNavbar: typeof import('./components/OuterNavbar.vue')['default']
+    ProfileAvatar: typeof import('./components/profileAvatar.vue')['default']
     Registration: typeof import('./components/Registration.vue')['default']
     RegistrationForm: typeof import('./components/auth/RegistrationForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
