@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
+import { inject } from 'vue'
+import type { ToastService } from '@/plugins/toast'
+import { useToastStore } from '@/stores/toast'
 
 type User = {
   id: string
@@ -131,6 +134,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     if (emailConfirmed) {
       setUser(loggedUser)
+      const toastStore = useToastStore()
+      toastStore.success(`Welcome back, ${loggedUser.name}!`)
     }
 
     loading.value = false

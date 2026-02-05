@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from './auth'
+import { inject } from 'vue'
+import type { ToastService } from '@/plugins/toast'
 
 type ProfileFormData = {
   firstname: string
@@ -31,6 +33,8 @@ export const useProfileStore = defineStore('profile', () => {
   const uploading = ref(false)
   const errorMessage = ref<string | null>(null)
   const successMessage = ref<string | null>(null)
+  const toast = inject<ToastService>('toast')!
+
 
   /* ----------------------------
      COMPUTED
@@ -69,6 +73,8 @@ export const useProfileStore = defineStore('profile', () => {
 
     if (error || !data) {
       errorMessage.value = error?.message || 'Failed to load profile'
+      toast.clearLoading()
+      toast.error(errorMessage.value)
       loading.value = false
       return
     }
@@ -141,6 +147,9 @@ export const useProfileStore = defineStore('profile', () => {
   auth.updateUser({ avatar_url: publicUrl })
 
   successMessage.value = 'Avatar uploaded successfully'
+  toast.clearLoading()
+  toast.info('Avatar uploaded successfully')
+
   uploading.value = false
 
   return publicUrl
@@ -182,6 +191,8 @@ export const useProfileStore = defineStore('profile', () => {
     })
 
     successMessage.value = 'Profile updated successfully'
+    toast.clearLoading()
+    toast.success('Profile updated successfully')
     loading.value = false
     return true
   }
@@ -211,6 +222,8 @@ export const useProfileStore = defineStore('profile', () => {
     if (!path) return true
 
     const { error } = await supabase.storage.from('avatars').remove([path])
+    toast.clearLoading()
+    toast.info('Avatar deleted')
     return !error
   }
 
