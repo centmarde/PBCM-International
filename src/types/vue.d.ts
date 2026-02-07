@@ -1,7 +1,9 @@
-import type { ToastService } from '@/plugins/toast'
+import type { ToastService } from "@/plugins/toast";
+import type { Vuetify } from "vuetify";
 
-declare module '@vue/runtime-core' {
+declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
-    $toast: ToastService
+    $toast: ToastService;
+    $vuetify: Vuetify;
   }
 }

@@ -84,7 +84,6 @@ export const useAuthStore = defineStore("auth", () => {
   async function loginUser(payload: {
     email: string;
     password: string;
-    rememberMe: false;
   }): Promise<{
     success: boolean;
     error?: string;
