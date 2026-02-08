@@ -5,7 +5,7 @@ const { isDark, toggleTheme } = usePbcmTheme()
 <template>
   <v-btn
     :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
-    :color="isDark ? 'secondary' : 'primary'"
+    :color="isDark ? 'teal-lighten-3' : 'teal-lighten-3'"
     variant="text"
     size="small"
     @click="toggleTheme"

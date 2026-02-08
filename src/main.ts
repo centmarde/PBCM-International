@@ -6,6 +6,8 @@
 
 // Plugins
 import { registerPlugins } from '@/plugins'
+import { createPinia } from 'pinia'
+import ToastPlugin from '@/plugins/toast'
 
 // Components
 import App from './App.vue'
@@ -19,5 +21,6 @@ import 'unfonts.css'
 const app = createApp(App)
 
 registerPlugins(app)
-
+app.use(createPinia())
+app.use(ToastPlugin)
 app.mount('#app')

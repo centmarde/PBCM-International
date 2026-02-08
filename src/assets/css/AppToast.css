@@ -1,0 +1,43 @@
+/* Flex row: icon + message + close button */
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Message takes remaining space */
+.toast-message {
+  flex: 1; /* allows close button to stick to right end */
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(var(--v-theme-on-surface)); /* adaptive to theme */
+}
+
+/* Close button: stays in the row, aligned right */
+.toast-close {
+  margin-left: auto; /* push it to the far right */
+}
+
+/* Close icon color: adaptive to light/dark mode */
+.toast-close-icon {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+/* Progress bar */
+.toast-progress {
+  height: 3px;
+  width: 100%;
+  margin-top: 6px;
+  transform-origin: left;
+  animation: shrink linear forwards;
+}
+
+.toast-progress.success { background: #4caf50; }
+.toast-progress.error   { background: #f44336; }
+.toast-progress.info    { background: #2196f3; }
+.toast-progress.primary { background: #1976d2; }
+
+@keyframes shrink {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}

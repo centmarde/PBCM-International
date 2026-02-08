@@ -1,0 +1,129 @@
+/* --------------------------------
+   Brand
+-------------------------------- */
+.navbar-brand {
+  background: linear-gradient(45deg,
+    rgb(var(--v-theme-secondary)),
+    rgb(var(--v-theme-secondary-lighten-1)));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* --------------------------------
+   Navbar Links
+-------------------------------- */
+.navbar-link {
+  text-transform: none !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+.navbar-link:hover {
+  transform: translateY(-1px);
+}
+
+/* --------------------------------
+   Mobile Nav
+-------------------------------- */
+.mobile-nav {
+  z-index: 2000;
+}
+.drawer-header {
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  background: linear-gradient(135deg,
+    rgba(var(--v-theme-primary), 0.05) 0%,
+    rgba(var(--v-theme-secondary), 0.05) 100%);
+}
+.mobile-nav-item {
+  margin: 0.25rem 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+.mobile-nav-item:hover {
+  background-color: rgba(var(--v-theme-primary), 0.1);
+}
+
+/* --------------------------------
+   Dark Theme Adjustments
+-------------------------------- */
+:root .v-theme--pbcmDark .navbar-brand {
+  background: linear-gradient(45deg,
+    rgb(var(--v-theme-primary)),
+    rgb(var(--v-theme-secondary)));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --------------------------------
+   Active Route
+-------------------------------- */
+.router-link-active.navbar-link {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+:root .v-theme--pbcmDark .router-link-active.navbar-link {
+  background-color: rgba(var(--v-theme-secondary), 0.2);
+}
+
+/* --------------------------------
+   Mobile Responsive
+-------------------------------- */
+@media (max-width: 960px) {
+  .navbar-brand {
+    font-size: 1.25rem;
+  }
+}
+
+/* --------------------------------
+   Right-side Auth Actions
+-------------------------------- */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* --------------------------------
+   Avatar Button
+-------------------------------- */
+.avatar-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.avatar-btn:hover {
+  transform: translateY(-1px);
+}
+.avatar-btn:focus-visible {
+  outline: 2px solid rgba(var(--v-theme-secondary), 0.6);
+  outline-offset: 2px;
+}
+
+/* --------------------------------
+   Avatar Menu
+-------------------------------- */
+.avatar-menu .v-list-item {
+  min-height: 44px;
+}
+.avatar-menu .v-list-item:hover {
+  background-color: rgba(var(--v-theme-primary), 0.08);
+}
+/* Dark mode menu hover */
+:root .v-theme--pbcmDark .avatar-menu .v-list-item:hover {
+  background-color: rgba(var(--v-theme-secondary), 0.18);
+}
+
+/* --------------------------------
+   Avatar Display - Centered and fitted
+-------------------------------- */
+.avatar-display {
+  overflow: hidden;
+}
+.avatar-display .v-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
